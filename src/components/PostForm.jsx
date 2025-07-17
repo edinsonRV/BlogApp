@@ -1,38 +1,50 @@
 import React, { useState } from "react";
 
-const PostForm = ({onAddPost}) => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+const PostForm = ({ onAddPost }) => {
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const { title, description } = formData;
+
     if (!title || !description) return;
 
-    const newPost ={
-        id:Date.now,
-        title,
-        description
-    }
+    const newPost = {
+      id: Date.now,
+      title,
+      description,
+    };
 
     onAddPost(newPost);
-    setTitle('');
-    setDescription('');
-
+    setFormData({ title: "", description: "" });
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <input
         type="text"
+        name="title"
         placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        value={formData.title}
+        onChange={handleChange}
       />
       <textarea
+        name="description"
         placeholder="body"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        value={formData.description}
+        onChange={handleChange}
       />
       <button type="submit">Publish</button>
     </form>
