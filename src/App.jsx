@@ -5,6 +5,7 @@ import PostForm from "./components/PostForm";
 
 function App() {
   const [posts, setPosts] = useState([]);
+  const [editingPost, setEditingPost] = useState(null);
 
   useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")
@@ -25,7 +26,6 @@ function App() {
         if (!response.ok) {
           throw new Error("Error al eliminar el post");
         }
-        // Actualiza el estado quitando el post eliminado
         setPosts(posts.filter((post) => post.id !== id));
       })
       .catch((error) => {
@@ -33,12 +33,34 @@ function App() {
       });
   };
 
+  const handleUpdatePost = (updatedPost) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) => (post.id === updatedPost.id ? updatedPost : post))
+    );
+    setEditingPost(null);
+  };
+
+  const handleEditPost = (postId) => {
+    const postToEdit = posts.find((p) => p.id === postId);
+    setEditingPost(postToEdit);
+  };
+
   return (
-    <>
-      <h1>BlogApp</h1>
-      <PostForm onAddPost={handleAddPost} />
-      <PostList posts={posts} onDelete={handleDeletePost} />
-    </>
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
+      <h1 className="text-4xl font-extrabold text-indigo-700 mb-8">
+        BlogApp con Tailwind CSS
+      </h1>
+      <PostForm
+        onAddPost={handleAddPost}
+        onUpdatePost={handleUpdatePost}
+        postToEdit={editingPost}
+      />
+      <PostList
+        posts={posts}
+        onDelete={handleDeletePost}
+        onUpdate={handleEditPost}
+      />
+    </div>
   );
 }
 
